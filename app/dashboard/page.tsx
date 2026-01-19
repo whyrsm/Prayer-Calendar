@@ -12,6 +12,11 @@ export default function Dashboard() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [selectedCity, setSelectedCity] = useState('Jakarta');
+  const [locationCoords, setLocationCoords] = useState<{
+    latitude: number;
+    longitude: number;
+    elevation?: number;
+  } | null>(null);
 
   if (status === 'loading') {
     return (
@@ -84,9 +89,16 @@ export default function Dashboard() {
               {/* Location Card */}
               <div className="glass-panel p-6 rounded-2xl space-y-4">
                 <h3 className="font-semibold text-lg">Location Settings</h3>
-                <LocationSelector value={selectedCity} onChange={setSelectedCity} />
+                <LocationSelector
+                  value={selectedCity}
+                  onChange={setSelectedCity}
+                  onCoordinatesChange={setLocationCoords}
+                />
                 <p className="text-xs text-muted-foreground pt-2">
-                  Selecting a city will update prayer times immediately.
+                  {locationCoords
+                    ? `📍 ${locationCoords.latitude.toFixed(4)}°, ${locationCoords.longitude.toFixed(4)}° ${locationCoords.elevation ? `• ${locationCoords.elevation}m` : ''}`
+                    : 'Selecting a city will update prayer times immediately.'
+                  }
                 </p>
               </div>
 

@@ -40,6 +40,12 @@ model UserPreferences {
   city            String   @default("Jakarta")
   country         String   @default("Indonesia")
   timezone        String   @default("Asia/Jakarta")
+  
+  // Coordinate-based location (more accurate)
+  latitude        Float?
+  longitude       Float?
+  elevation       Float?   @default(0)  // meters above sea level
+  
   calculationMethod Int    @default(20)  // Kemenag Indonesia
   school          Int      @default(0)   // 0=Shafi, 1=Hanafi
   reminderMinutes Int      @default(10)

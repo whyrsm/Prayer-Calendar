@@ -29,16 +29,27 @@ export class AladhanClient {
 
   async getDailyTimings(date: Date): Promise<DayData> {
     const dateStr = this.formatDate(date);
+
+    const params: any = {
+      latitude: this.location.latitude,
+      longitude: this.location.longitude,
+      method: this.location.method,
+      school: this.location.school,
+    };
+
+    // Add elevation if provided
+    if (this.location.elevation !== undefined && this.location.elevation !== null) {
+      params.elevation = this.location.elevation;
+    }
+
+    // Add adjustments if provided
+    if (this.location.adjustments) {
+      params.tune = this.location.adjustments;
+    }
+
     const response = await this.http.get<AladhanResponse<DayData>>(
-      `/timingsByCity/${dateStr}`,
-      {
-        params: {
-          city: this.location.city,
-          country: this.location.country,
-          method: this.location.method,
-          school: this.location.school,
-        },
-      }
+      `/timings/${dateStr}`,
+      { params }
     );
 
     // Validate response
@@ -47,16 +58,24 @@ export class AladhanClient {
   }
 
   async getMonthlyCalendar(year: number, month: number): Promise<DayData[]> {
+    const params: any = {
+      latitude: this.location.latitude,
+      longitude: this.location.longitude,
+      method: this.location.method,
+      school: this.location.school,
+    };
+
+    if (this.location.elevation !== undefined && this.location.elevation !== null) {
+      params.elevation = this.location.elevation;
+    }
+
+    if (this.location.adjustments) {
+      params.tune = this.location.adjustments;
+    }
+
     const response = await this.http.get<AladhanResponse<DayData[]>>(
-      `/calendarByCity/${year}/${month}`,
-      {
-        params: {
-          city: this.location.city,
-          country: this.location.country,
-          method: this.location.method,
-          school: this.location.school,
-        },
-      }
+      `/calendar/${year}/${month}`,
+      { params }
     );
 
     return response.data.data;

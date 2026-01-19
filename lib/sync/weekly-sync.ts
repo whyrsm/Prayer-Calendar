@@ -9,6 +9,9 @@ const PRAYER_NAMES = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'] as const;
 export interface WeeklySyncConfig {
     city: string;
     country: string;
+    latitude: number;
+    longitude: number;
+    elevation?: number;
     timezone: string;
     calculationMethod: number;
     school: number;
@@ -39,6 +42,9 @@ export async function syncWeeklyPrayerTimes(
         const aladhanClient = new AladhanClient({
             city: config.city,
             country: config.country,
+            latitude: config.latitude,
+            longitude: config.longitude,
+            elevation: config.elevation,
             method: config.calculationMethod,
             school: config.school,
             timezone: config.timezone,

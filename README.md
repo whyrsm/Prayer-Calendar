@@ -5,15 +5,18 @@ Automatically sync Islamic prayer times to your Google Calendar with reminders.
 ## Features
 
 - ✅ **Google OAuth Login** - Login with your Google account for seamless Calendar API access
-- ✅ **10 Indonesian Cities** - Choose from major cities across Indonesia
+- ✅ **Coordinate-Based Calculations** - Uses precise latitude/longitude for accurate prayer times
+- ✅ **Custom Location Search** - Type any city worldwide, not limited to presets
+- ✅ **10 Indonesian Cities** - Preset cities with accurate coordinates and elevation data
 - ✅ **Prayer Times Preview** - View today's prayer schedule before syncing
 - ✅ **5 Daily Prayers** - Subuh, Dzuhur, Ashar, Maghrib, Isya
 - ✅ **10-Minute Reminders** - Get popup and email notifications before prayer time
-- ✅ **Flexible Sync** - Sync today, this month, or the entire year
+- ✅ **Flexible Sync** - Sync today, this week, this month, or the entire year
 - ✅ **Auto Sync** - Automatic daily sync at 11 PM WIB via cron job
 - ✅ **Duplicate Prevention** - Deterministic event IDs prevent duplicates
 - ✅ **Color Coding** - Each prayer has a distinct color in Google Calendar
 - ✅ **Hijri Date** - Event descriptions include Hijri calendar dates
+- ✅ **Elevation Support** - Accounts for altitude in mountainous areas
 
 ## Tech Stack
 
@@ -100,6 +103,8 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) in your browser.
 
+> 📖 **Learn More**: For detailed information about the coordinate-based prayer calculation system, see [COORDINATE_SYSTEM.md](./COORDINATE_SYSTEM.md)
+
 ## Deployment to Railway
 
 ### 1. Create Railway Account
@@ -153,13 +158,42 @@ Go back to Google Cloud Console and add production URLs:
 ## API Endpoints
 
 ### `GET /api/prayer-times`
-Fetch prayer times for a specific city.
+Fetch prayer times for a specific location.
 
 **Query Parameters:**
 - `city` (string): City name (default: "Jakarta")
-- `country` (string): Country (default: "Indonesia")
+- `latitude` (number): Latitude coordinate (overrides city)
+- `longitude` (number): Longitude coordinate (required with latitude)
+- `elevation` (number): Elevation in meters (optional)
 - `method` (number): Calculation method (default: 20 - Kemenag)
 - `school` (number): School (0 = Shafi, 1 = Hanafi)
+
+**Examples:**
+```
+/api/prayer-times?city=Jakarta
+/api/prayer-times?latitude=-6.2088&longitude=106.8456&elevation=8
+/api/prayer-times?city=Bogor  // Will geocode if not in presets
+```
+
+### `GET /api/geocode`
+Convert location name to coordinates.
+
+**Query Parameters:**
+- `q` (string): Location query (city name, address, etc.)
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "latitude": -6.5950,
+    "longitude": 106.8166,
+    "displayName": "Bogor, West Java, Indonesia",
+    "city": "Bogor",
+    "country": "Indonesia"
+  }
+}
+```
 
 ### `POST /api/sync`
 Trigger manual sync to Google Calendar.
@@ -167,7 +201,7 @@ Trigger manual sync to Google Calendar.
 **Body:**
 ```json
 {
-  "type": "today" | "tomorrow" | "month" | "year"
+  "type": "today" | "tomorrow" | "week" | "month" | "year"
 }
 ```
 

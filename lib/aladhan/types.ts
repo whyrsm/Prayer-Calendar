@@ -51,7 +51,11 @@ export interface AladhanResponse<T> {
 export interface LocationConfig {
   city: string;
   country: string;
-  method: number;  // Calculation method (1-99)
-  school: number;  // 0 = Shafi, 1 = Hanafi
+  latitude: number;
+  longitude: number;
+  elevation?: number;  // meters above sea level
+  method: number;      // Calculation method (1-99)
+  school: number;      // 0 = Shafi, 1 = Hanafi
   timezone: string;
+  adjustments?: string; // Time adjustments in format: "0,0,0,0,0,0,0,0,0"
 }

@@ -27,10 +27,34 @@ export async function POST(request: NextRequest) {
 
     const { type, date: dateStr } = await request.json();
 
+    // Get coordinates from preferences or fallback to preset city
+    let latitude = user.preferences.latitude;
+    let longitude = user.preferences.longitude;
+    let elevation = user.preferences.elevation;
+
+    // If no coordinates in preferences, try to get from preset cities
+    if (!latitude || !longitude) {
+      const { INDONESIAN_CITIES } = await import('@/lib/constants/cities');
+      const presetCity = INDONESIAN_CITIES.find(c => c.name === user.preferences.city);
+      if (presetCity) {
+        latitude = presetCity.latitude;
+        longitude = presetCity.longitude;
+        elevation = presetCity.elevation;
+      } else {
+        // Default to Jakarta if nothing found
+        latitude = INDONESIAN_CITIES[0].latitude;
+        longitude = INDONESIAN_CITIES[0].longitude;
+        elevation = INDONESIAN_CITIES[0].elevation;
+      }
+    }
+
     // Prepare sync config
     const config = {
       city: user.preferences.city,
       country: user.preferences.country,
+      latitude,
+      longitude,
+      elevation,
       timezone: user.preferences.timezone,
       calculationMethod: user.preferences.calculationMethod,
       school: user.preferences.school,
