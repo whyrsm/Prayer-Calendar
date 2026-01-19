@@ -103,6 +103,7 @@ export default function Dashboard() {
 
                 <div className="space-y-3">
                   <SyncButton type="today" label="Sync Today Only" />
+                  <SyncButton type="week" label="Sync This Week" />
                   <div className="grid grid-cols-2 gap-3">
                     <SyncButton type="month" label="This Month" />
                     <SyncButton type="year" label="Full Year" />

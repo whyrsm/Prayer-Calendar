@@ -4,7 +4,7 @@ import { useSync } from '@/hooks/useSync';
 import { useState } from 'react';
 
 interface SyncButtonProps {
-  type: 'today' | 'tomorrow' | 'month' | 'year';
+  type: 'today' | 'tomorrow' | 'week' | 'month' | 'year';
   label: string;
 }
 

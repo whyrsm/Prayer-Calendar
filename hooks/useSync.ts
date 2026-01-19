@@ -4,7 +4,7 @@ export function useSync() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (data: { type: 'today' | 'tomorrow' | 'month' | 'year' }) => {
+    mutationFn: async (data: { type: 'today' | 'tomorrow' | 'week' | 'month' | 'year' }) => {
       const response = await fetch('/api/sync', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

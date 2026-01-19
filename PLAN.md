@@ -178,6 +178,7 @@ prayer-calendar/
    - **Prayer Times Preview**: Tampilkan jadwal hari ini (Subuh, Dzuhur, Ashar, Maghrib, Isya)
    - **Sync Controls**:
      - Tombol "Sync Hari Ini"
+     - Tombol "Sync Minggu Ini" (Weekly)
      - Tombol "Sync Bulan Ini"
      - Tombol "Sync Tahun Ini"
    - **Sync Status**: Tampilkan last sync time & status
@@ -401,7 +402,7 @@ DATABASE_URL=postgresql://...
 3. **Preview Jadwal**: Lihat jadwal sholat hari ini sebelum sync
 4. **5 Waktu Sholat**: Subuh, Dzuhur, Ashar, Maghrib, Isya
 5. **Reminder 10 menit**: Notifikasi popup & email sebelum adzan
-6. **Flexible Sync**: Sync hari ini, bulan ini, atau setahun penuh
+6. **Flexible Sync**: Sync hari ini, minggu ini, bulan ini, atau setahun penuh
 7. **Auto Sync**: Cron job untuk sync otomatis setiap hari
 8. **Duplikat Prevention**: Event ID deterministik, tidak ada duplicate
 9. **Color Coding**: Setiap waktu sholat punya warna berbeda di calendar
@@ -503,6 +504,7 @@ model SyncLog {
 
 enum SyncType {
   DAILY
+  WEEKLY
   MONTHLY
   YEARLY
 }

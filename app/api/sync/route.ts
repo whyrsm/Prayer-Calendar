@@ -4,7 +4,8 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { syncDailyPrayerTimes } from '@/lib/sync/daily-sync';
 import { syncMonthlyPrayerTimes, syncYearlyPrayerTimes } from '@/lib/sync/monthly-sync';
-import { addDays } from 'date-fns';
+import { syncWeeklyPrayerTimes } from '@/lib/sync/weekly-sync';
+import { addDays, startOfWeek, endOfWeek } from 'date-fns';
 
 export async function POST(request: NextRequest) {
   try {
@@ -39,7 +40,7 @@ export async function POST(request: NextRequest) {
     let result;
     let startDate: Date;
     let endDate: Date;
-    let syncType: 'DAILY' | 'MONTHLY' | 'YEARLY';
+    let syncType: 'DAILY' | 'WEEKLY' | 'MONTHLY' | 'YEARLY';
 
     // Perform sync based on type
     if (type === 'today') {
@@ -52,6 +53,12 @@ export async function POST(request: NextRequest) {
       startDate = addDays(new Date(), 1);
       endDate = addDays(new Date(), 1);
       result = await syncDailyPrayerTimes(session.accessToken, config, startDate);
+    } else if (type === 'week') {
+      syncType = 'WEEKLY';
+      const now = new Date();
+      startDate = startOfWeek(now, { weekStartsOn: 0 }); // Sunday
+      endDate = endOfWeek(now, { weekStartsOn: 0 }); // Saturday
+      result = await syncWeeklyPrayerTimes(session.accessToken, config, now);
     } else if (type === 'month') {
       syncType = 'MONTHLY';
       const now = new Date();
@@ -78,8 +85,8 @@ export async function POST(request: NextRequest) {
       result.eventsFailed === 0
         ? 'SUCCESS'
         : result.eventsCreated > 0
-        ? 'PARTIAL_SUCCESS'
-        : 'FAILED';
+          ? 'PARTIAL_SUCCESS'
+          : 'FAILED';
 
     await prisma.syncLog.create({
       data: {
