@@ -11,8 +11,16 @@ const PRAYER_ICONS: Record<string, string> = {
   Fajr: '🌅',
   Dhuhr: '☀️',
   Asr: '🌤️',
-  Maghrib: '🌅',
+  Maghrib: '🌆',
   Isha: '🌙',
+};
+
+const PRAYER_NAMES: Record<string, string> = {
+  Fajr: 'Subuh',
+  Dhuhr: 'Dzuhur',
+  Asr: 'Ashar',
+  Maghrib: 'Maghrib',
+  Isha: 'Isya',
 };
 
 export function PrayerTimesPreview({ city }: PrayerTimesPreviewProps) {
@@ -20,14 +28,15 @@ export function PrayerTimesPreview({ city }: PrayerTimesPreviewProps) {
 
   if (isLoading) {
     return (
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <div className="animate-pulse">
-          <div className="h-6 bg-gray-200 rounded w-3/4 mb-4"></div>
-          <div className="space-y-3">
-            {[...Array(5)].map((_, i) => (
-              <div key={i} className="h-4 bg-gray-200 rounded"></div>
-            ))}
-          </div>
+      <div className="glass-panel rounded-2xl p-8 w-full animate-pulse">
+        <div className="h-8 bg-muted rounded w-2/3 mb-8"></div>
+        <div className="space-y-4">
+          {[...Array(5)].map((_, i) => (
+            <div key={i} className="flex justify-between items-center bg-white/5 p-4 rounded-xl">
+              <div className="h-4 bg-muted rounded w-24"></div>
+              <div className="h-6 bg-muted rounded w-16"></div>
+            </div>
+          ))}
         </div>
       </div>
     );
@@ -35,8 +44,11 @@ export function PrayerTimesPreview({ city }: PrayerTimesPreviewProps) {
 
   if (error || !data?.success) {
     return (
-      <div className="bg-red-50 rounded-lg p-6 text-red-600">
-        ❌ Failed to load prayer times
+      <div className="glass-panel p-8 rounded-2xl border-l-4 border-red-500 text-red-600 bg-red-50/50">
+        <div className="flex items-center gap-3">
+          <span className="text-2xl">❌</span>
+          <span className="font-medium">Failed to load prayer times for {city}</span>
+        </div>
       </div>
     );
   }
@@ -44,26 +56,44 @@ export function PrayerTimesPreview({ city }: PrayerTimesPreviewProps) {
   const today = new Date();
   const prayerData = data.data;
 
+  // Find next prayer (simple logic just for highlighting)
+  // detailed next prayer logic would go here, for now just rendering.
+
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
-      <h3 className="text-lg font-semibold mb-4">
-        Jadwal Sholat - {format(today, 'EEEE, d MMM yyyy')}
-      </h3>
+    <div className="glass-panel rounded-2xl p-8 w-full">
+      <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+        <div>
+          <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-1">
+            Prayer Schedule
+          </h2>
+          <h3 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/70">
+            {format(today, 'EEEE, d MMM')}
+          </h3>
+          <p className="text-sm text-muted-foreground mt-1 font-mono">
+            {prayerData.date.hijri.day} {prayerData.date.hijri.month.en} {prayerData.date.hijri.year} • {city}
+          </p>
+        </div>
+      </div>
+
       <div className="space-y-3">
         {['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'].map((prayer) => (
-          <div key={prayer} className="flex justify-between items-center py-2 border-b">
-            <span className="flex items-center gap-2">
-              <span className="text-2xl">{PRAYER_ICONS[prayer]}</span>
-              <span className="font-medium">{prayer}</span>
-            </span>
-            <span className="text-lg font-bold text-blue-600">
+          <div
+            key={prayer}
+            className="group flex justify-between items-center p-4 rounded-xl hover:bg-white/50 transition-all duration-300 border border-transparent hover:border-primary/10 hover:shadow-sm"
+          >
+            <div className="flex items-center gap-4">
+              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-xl group-hover:scale-110 transition-transform">
+                {PRAYER_ICONS[prayer]}
+              </div>
+              <span className="font-medium text-lg text-foreground">
+                {PRAYER_NAMES[prayer] || prayer}
+              </span>
+            </div>
+            <span className="text-2xl font-bold font-mono tracking-tight text-primary">
               {prayerData.timings[prayer]}
             </span>
           </div>
         ))}
-      </div>
-      <div className="mt-4 text-sm text-gray-500">
-        <p>📅 {prayerData.date.hijri.date} {prayerData.date.hijri.month.en} {prayerData.date.hijri.year} Hijri</p>
       </div>
     </div>
   );
