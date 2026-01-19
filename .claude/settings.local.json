@@ -11,7 +11,11 @@
       "Bash(npm run dev:*)",
       "Bash(openssl rand:*)",
       "Bash(lsof:*)",
-      "Bash(npx prisma db push:*)"
+      "Bash(npx prisma db push:*)",
+      "Bash(grep:*)",
+      "Bash(npm run build)",
+      "Bash(cd /Users/wrismawan/Work/00\\\\ -\\\\ Kav/Prayer-Calendar && npx tsc:*)",
+      "Bash(npm i --save-dev @types/pg)"
     ]
   }
 }

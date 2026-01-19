@@ -43,7 +43,7 @@ export async function syncDailyPrayerTimes(
       timezone: config.timezone,
     });
 
-    const calendarClient = new GoogleCalendarClient(accessToken);
+    const calendarClient = new GoogleCalendarClient(accessToken, config.timezone);
 
     // Fetch prayer times for the date
     const dayData = await aladhanClient.getDailyTimings(date);

@@ -5,13 +5,15 @@ import { PrayerEvent } from './types';
 export class GoogleCalendarClient {
   private calendar: calendar_v3.Calendar;
   private calendarId: string;
+  private timezone: string;
 
-  constructor(accessToken: string, calendarId: string = 'primary') {
+  constructor(accessToken: string, timezone: string, calendarId: string = 'primary') {
     const oauth2Client = new OAuth2Client();
     oauth2Client.setCredentials({ access_token: accessToken });
 
     this.calendar = google.calendar({ version: 'v3', auth: oauth2Client });
     this.calendarId = calendarId;
+    this.timezone = timezone;
   }
 
   async createPrayerEvent(event: PrayerEvent): Promise<string> {
@@ -22,11 +24,11 @@ export class GoogleCalendarClient {
       description: event.description || `Time for ${event.prayerName} prayer`,
       start: {
         dateTime: event.dateTime.toISOString(),
-        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        timeZone: this.timezone,
       },
       end: {
         dateTime: endTime.toISOString(),
-        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        timeZone: this.timezone,
       },
       reminders: {
         useDefault: false,
@@ -66,11 +68,11 @@ export class GoogleCalendarClient {
       description: event.description,
       start: {
         dateTime: event.dateTime.toISOString(),
-        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        timeZone: this.timezone,
       },
       end: {
         dateTime: endTime.toISOString(),
-        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        timeZone: this.timezone,
       },
       reminders: {
         useDefault: false,
@@ -113,8 +115,17 @@ export class GoogleCalendarClient {
 
   private generateEventId(prayerName: string, dateTime: Date): string {
     // Create deterministic ID based on prayer and date
+    // Google Calendar event IDs must use base32hex encoding: only a-v and 0-9
+    // Letters w, x, y, z are NOT allowed
     const dateStr = dateTime.toISOString().split('T')[0].replace(/-/g, '');
-    return `prayer${prayerName.toLowerCase()}${dateStr}`.replace(/[^a-z0-9]/g, '');
+    const rawId = `salah${prayerName.toLowerCase()}${dateStr}`;
+    // Convert any invalid characters (w, x, y, z) to valid base32hex characters
+    return rawId
+      .replace(/[^a-z0-9]/g, '')
+      .replace(/w/g, 'a')
+      .replace(/x/g, 'b')
+      .replace(/y/g, 'c')
+      .replace(/z/g, 'd');
   }
 
   private getPrayerColor(prayerName: string): string {

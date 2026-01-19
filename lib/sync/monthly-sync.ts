@@ -44,7 +44,7 @@ export async function syncMonthlyPrayerTimes(
       timezone: config.timezone,
     });
 
-    const calendarClient = new GoogleCalendarClient(accessToken);
+    const calendarClient = new GoogleCalendarClient(accessToken, config.timezone);
 
     // Fetch monthly calendar
     const monthData = await aladhanClient.getMonthlyCalendar(year, month);
