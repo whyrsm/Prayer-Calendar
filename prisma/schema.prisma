@@ -1,0 +1,87 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// User dari NextAuth
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  image         String?
+
+  // Google OAuth tokens
+  accessToken   String?   @db.Text
+  refreshToken  String?   @db.Text
+  tokenExpiry   DateTime?
+
+  // Preferences
+  preferences   UserPreferences?
+
+  // Sync history
+  syncLogs      SyncLog[]
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+// User preferences untuk lokasi & reminder
+model UserPreferences {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  city            String   @default("Jakarta")
+  country         String   @default("Indonesia")
+  timezone        String   @default("Asia/Jakarta")
+  calculationMethod Int    @default(20)  // Kemenag Indonesia
+  school          Int      @default(0)   // 0=Shafi, 1=Hanafi
+  reminderMinutes Int      @default(10)
+
+  // Auto sync settings
+  autoSyncEnabled Boolean  @default(true)
+  autoSyncTime    String   @default("23:00")  // Jam untuk auto sync
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+// Log setiap sync yang dilakukan
+model SyncLog {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  syncType    SyncType  // DAILY, MONTHLY, YEARLY
+  startDate   DateTime  // Tanggal mulai sync
+  endDate     DateTime  // Tanggal akhir sync
+
+  status      SyncStatus
+  eventsCreated Int     @default(0)
+  eventsUpdated Int     @default(0)
+  eventsFailed  Int     @default(0)
+
+  errorMessage String?  @db.Text
+
+  createdAt   DateTime  @default(now())
+}
+
+enum SyncType {
+  DAILY
+  MONTHLY
+  YEARLY
+}
+
+enum SyncStatus {
+  PENDING
+  IN_PROGRESS
+  SUCCESS
+  PARTIAL_SUCCESS
+  FAILED
+}
