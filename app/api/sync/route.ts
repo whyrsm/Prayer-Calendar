@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
       country: user.preferences.country,
       latitude,
       longitude,
-      elevation,
+      elevation: elevation ?? undefined,
       timezone: user.preferences.timezone,
       calculationMethod: user.preferences.calculationMethod,
       school: user.preferences.school,

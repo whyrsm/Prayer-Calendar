@@ -37,10 +37,20 @@ export async function GET(request: NextRequest) {
         continue;
       }
 
+      // Skip users without coordinates
+      if (user.preferences.latitude === null || user.preferences.longitude === null) {
+        console.warn(`Skipping user ${user.email}: missing coordinates`);
+        failedCount++;
+        continue;
+      }
+
       try {
         const config = {
           city: user.preferences.city,
           country: user.preferences.country,
+          latitude: user.preferences.latitude,
+          longitude: user.preferences.longitude,
+          elevation: user.preferences.elevation ?? undefined,
           timezone: user.preferences.timezone,
           calculationMethod: user.preferences.calculationMethod,
           school: user.preferences.school,
