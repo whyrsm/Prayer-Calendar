@@ -11,7 +11,7 @@ import { SyncStatus } from '@/components/SyncStatus';
 export default function Dashboard() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const [selectedCity, setSelectedCity] = useState('Jakarta');
+  const [selectedCity, setSelectedCity] = useState('');
   const [locationCoords, setLocationCoords] = useState<{
     latitude: number;
     longitude: number;
@@ -76,7 +76,11 @@ export default function Dashboard() {
                   {/* Mobile Location Selector placeholder if needed, but sticking to sidebar for now */}
                 </div>
               </div>
-              <PrayerTimesPreview city={selectedCity} />
+              <PrayerTimesPreview
+                city={selectedCity}
+                latitude={locationCoords?.latitude}
+                longitude={locationCoords?.longitude}
+              />
 
               <div className="hidden lg:block">
                 <SyncStatus />
