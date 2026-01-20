@@ -25,17 +25,18 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'User preferences not found' }, { status: 404 });
     }
 
-    const { type, date: dateStr } = await request.json();
+    const { type, city: requestCity, latitude: requestLatitude, longitude: requestLongitude } = await request.json();
 
-    // Get coordinates from preferences or fallback to preset city
-    let latitude = user.preferences.latitude;
-    let longitude = user.preferences.longitude;
+    // Use coordinates from request if provided, otherwise fallback to preferences
+    let latitude = requestLatitude ?? user.preferences.latitude;
+    let longitude = requestLongitude ?? user.preferences.longitude;
     let elevation = user.preferences.elevation;
+    let city = requestCity || user.preferences.city;
 
-    // If no coordinates in preferences, try to get from preset cities
+    // If still no coordinates, try to get from preset cities
     if (!latitude || !longitude) {
       const { INDONESIAN_CITIES } = await import('@/lib/constants/cities');
-      const presetCity = INDONESIAN_CITIES.find(c => c.name === user.preferences.city);
+      const presetCity = INDONESIAN_CITIES.find(c => c.name === city);
       if (presetCity) {
         latitude = presetCity.latitude;
         longitude = presetCity.longitude;
@@ -45,12 +46,13 @@ export async function POST(request: NextRequest) {
         latitude = INDONESIAN_CITIES[0].latitude;
         longitude = INDONESIAN_CITIES[0].longitude;
         elevation = INDONESIAN_CITIES[0].elevation;
+        city = INDONESIAN_CITIES[0].name;
       }
     }
 
     // Prepare sync config
     const config = {
-      city: user.preferences.city,
+      city,
       country: user.preferences.country,
       latitude,
       longitude,

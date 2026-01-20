@@ -20,7 +20,7 @@ export class GoogleCalendarClient {
     const endTime = new Date(event.dateTime.getTime() + 15 * 60 * 1000); // 15 min duration
 
     const calendarEvent: calendar_v3.Schema$Event = {
-      summary: `${event.prayerName} Prayer`,
+      summary: event.city ? `${event.prayerName} Prayer - ${event.city}` : `${event.prayerName} Prayer`,
       description: event.description || `Time for ${event.prayerName} prayer`,
       start: {
         dateTime: event.dateTime.toISOString(),
@@ -64,7 +64,7 @@ export class GoogleCalendarClient {
     const endTime = new Date(event.dateTime.getTime() + 30 * 60 * 1000);
 
     const calendarEvent: calendar_v3.Schema$Event = {
-      summary: `${event.prayerName} Prayer`,
+      summary: event.city ? `${event.prayerName} Prayer - ${event.city}` : `${event.prayerName} Prayer`,
       description: event.description,
       start: {
         dateTime: event.dateTime.toISOString(),

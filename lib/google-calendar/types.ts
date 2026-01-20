@@ -3,6 +3,7 @@ export interface PrayerEvent {
   dateTime: Date;
   description?: string;
   reminderMinutes: number;
+  city?: string;
 }
 
 export interface SyncResult {

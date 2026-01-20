@@ -118,12 +118,20 @@ export default function Dashboard() {
                 </div>
 
                 <div className="space-y-3">
-                  <SyncButton type="today" label="Sync Today Only" />
-                  <SyncButton type="week" label="Sync This Week" />
-                  <div className="grid grid-cols-2 gap-3">
-                    <SyncButton type="month" label="This Month" />
-                    <SyncButton type="year" label="Full Year" />
-                  </div>
+                  <SyncButton
+                    type="today"
+                    label="Sync Today Only"
+                    city={selectedCity}
+                    latitude={locationCoords?.latitude}
+                    longitude={locationCoords?.longitude}
+                  />
+                  <SyncButton
+                    type="week"
+                    label="Sync This Week"
+                    city={selectedCity}
+                    latitude={locationCoords?.latitude}
+                    longitude={locationCoords?.longitude}
+                  />
                 </div>
 
                 <div className="pt-4 border-t border-border mt-4">

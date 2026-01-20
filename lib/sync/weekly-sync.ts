@@ -78,6 +78,7 @@ export async function syncWeeklyPrayerTimes(
                             dateTime: prayerDateTime,
                             description: `${prayerName} prayer time - ${dayData.date.hijri.date} ${dayData.date.hijri.month.en} ${dayData.date.hijri.year} Hijri`,
                             reminderMinutes: config.reminderMinutes,
+                            city: config.city,
                         };
 
                         await calendarClient.createPrayerEvent(event);
