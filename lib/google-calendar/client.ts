@@ -61,7 +61,7 @@ export class GoogleCalendarClient {
 
   async updatePrayerEvent(event: PrayerEvent): Promise<string> {
     const eventId = this.generateEventId(event.prayerName, event.dateTime);
-    const endTime = new Date(event.dateTime.getTime() + 15 * 60 * 1000);
+    const endTime = new Date(event.dateTime.getTime() + 30 * 60 * 1000);
 
     const calendarEvent: calendar_v3.Schema$Event = {
       summary: `${event.prayerName} Prayer`,
